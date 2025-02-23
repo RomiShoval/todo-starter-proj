@@ -30,9 +30,13 @@ export function saveTodo(todo){
 
 export function loadTodos(){
     store.dispatch({type:SET_IS_LOADING,isLoading:true})
+    
     const filterBy = store.getState().toDoModule.filterBy
     return todoService.query(filterBy)
-        .then(todos => store.dispatch({type:SET_TODOS,todos}))
+        .then(filteredTodos  => {
+            store.dispatch({type:SET_TODOS,todos:filteredTodos })
+            return filteredTodos
+        })
         .catch(err => {
             console.eror('err:', err)
             throw err

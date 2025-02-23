@@ -49,7 +49,6 @@
 .todo-list button:nth-child(2) {
     background-color: #3498db;
     color: black;
-    color: white;
 }
 
 .todo-list button:nth-child(2):hover {
@@ -60,7 +59,7 @@
 /* Delete Button */
 .todo-list button:nth-child(1) {
     background-color: #c0392b;
-    color: white;
+    color: black;
 }
 
 .todo-list button:nth-child(1):hover {
@@ -69,10 +68,10 @@
 }
 
 /* Link Buttons */
-.todo-list a {
+/* .todo-list a {
     text-decoration: none;
     color: white;
-}
+} */
 
 /* .todo-list button:nth-child(3),
 .todo-list button:nth-child(4) {

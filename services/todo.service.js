@@ -28,7 +28,9 @@ function query(filterBy = {}) {
             if (filterBy.importance) {
                 todos = todos.filter(todo => todo.importance >= filterBy.importance)
             }
-
+            if(filterBy.isDone !== null && filterBy.isDone !== undefined){
+                todos = todos.filter(todo => todo.isDone === filterBy.isDone)
+            }
             return todos
         })
 }
@@ -62,14 +64,21 @@ function getEmptyTodo(txt = '', importance = 5) {
 }
 
 function getDefaultFilter() {
-    return { txt: '', importance: 0 }
+    return { txt: '', importance: 0 ,isDone :null}
 }
 
 function getFilterFromSearchParams(searchParams) {
     const defaultFilter = getDefaultFilter()
     const filterBy = {}
     for (const field in defaultFilter) {
-        filterBy[field] = searchParams.get(field) || ''
+        if (field === "isDone") {
+            filterBy[field] = searchParams.get(field);
+            if (filterBy[field] === "All" || !filterBy[field]) filterBy[field] = null;
+            else filterBy[field] = filterBy[field] === "Done";
+        }
+        else{
+            filterBy[field] = searchParams.get(field) || ''
+        }
     }
     return filterBy
 }
