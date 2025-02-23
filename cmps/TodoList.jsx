@@ -2,11 +2,16 @@ import { TodoPreview } from "./TodoPreview.jsx"
 const { Link } = ReactRouterDOM
 
 export function TodoList({ todos, onRemoveTodo, onToggleTodo }) {
+    function getTodoClass(importance) {
+        if (importance >= 8) return "high"
+        if (importance >= 5) return "medium"
+        return "low"
+    }
 
     return (
         <ul className="todo-list">
             {todos.map(todo =>
-                <li key={todo._id}>
+                <li key={todo._id} className={getTodoClass(todo.importance)}>
                     <TodoPreview todo={todo} onToggleTodo={()=>onToggleTodo(todo)} />
                     <section>
                         <button onClick={() => onRemoveTodo(todo._id)}>Remove</button>

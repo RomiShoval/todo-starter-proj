@@ -13,3 +13,74 @@
     align-items: center;
     background-color: var(--clr1bg);
 }
+
+/* High Importance (Red) */
+.todo-list li.high {
+    background-color: #f75b4a;
+}
+
+/* Medium Importance (Orange) */
+.todo-list li.medium {
+    background-color: #f7ad36;
+}
+
+/* Low Importance (Green) */
+.todo-list li.low {
+    background-color: #2ecc71;
+}
+
+/* Hover Effect */
+.todo-list li:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Button Styles */
+.todo-list button {
+    margin: 5px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+/* Toggle Button (Complete/Undo) */
+.todo-list button:nth-child(2) {
+    background-color: #3498db;
+    color: black;
+    color: white;
+}
+
+.todo-list button:nth-child(2):hover {
+    background-color: #2980b9;
+    transform: scale(1.1);
+}
+
+/* Delete Button */
+.todo-list button:nth-child(1) {
+    background-color: #c0392b;
+    color: white;
+}
+
+.todo-list button:nth-child(1):hover {
+    background-color: #a93226;
+    transform: scale(1.1);
+}
+
+/* Link Buttons */
+.todo-list a {
+    text-decoration: none;
+    color: white;
+}
+
+/* .todo-list button:nth-child(3),
+.todo-list button:nth-child(4) {
+    background-color: #8e44ad;
+}
+
+.todo-list button:nth-child(3):hover,
+.todo-list button:nth-child(4):hover {
+    background-color: #732d91;
+    transform: scale(1.1);
+} */
