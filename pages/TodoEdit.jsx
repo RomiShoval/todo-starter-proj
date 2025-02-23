@@ -1,22 +1,33 @@
 import { todoService } from "../services/todo.service.js"
 import { showErrorMsg, showSuccessMsg } from "../services/event-bus.service.js"
+import { saveTodo } from "../store/actions/todo.actions.js"
+import { SET_TODO, UPDATE_TODO_FIELD } from "../store/reducers/todo.reducer.js"
 
 const { useState, useEffect } = React
 const { useNavigate, useParams } = ReactRouterDOM
+const {useSelector,useDispatch} = ReactRedux
 
 export function TodoEdit() {
-
-    const [todoToEdit, setTodoToEdit] = useState(todoService.getEmptyTodo())
+    // const [todoToEdit, setTodoToEdit] = useState(todoService.getEmptyTodo())
+    const dispatch = useDispatch()
     const navigate = useNavigate()
     const params = useParams()
 
+    const todos = useSelector(storeState => storeState.toDoModule.todos)
+    const existingTodo = todos.find(todo => todo._id === params.todoId) || todoService.getEmptyTodo()
+    const[todoToEdit,setTodoToEdit] = useState(existingTodo)
+
+
     useEffect(() => {
-        if (params.todoId) loadTodo()
+        if (params.todoId && !existingTodo) 
+            loadTodo()
     }, [])
 
     function loadTodo() {
         todoService.get(params.todoId)
-            .then(setTodoToEdit)
+            .then(todo => {
+                setTodoToEdit(todo)
+                dispatch({type : SET_TODO ,todo})})
             .catch(err => console.log('err:', err))
     }
 
@@ -37,14 +48,18 @@ export function TodoEdit() {
             default:
                 break
         }
+       console.log(`🔍 Debug: Changing field "${field}" to value`, value)
 
-        setTodoToEdit(prevTodoToEdit => ({ ...prevTodoToEdit, [field]: value }))
+       setTodoToEdit(prevTodo => ({ ...prevTodo, [field]: value }))
+       dispatch({type:UPDATE_TODO_FIELD , field,value})
     }
 
     function onSaveTodo(ev) {
         ev.preventDefault()
-        todoService.save(todoToEdit)
+        console.log("📝 Saving todo:", todoToEdit)
+        saveTodo(todoToEdit)
             .then((savedTodo) => {
+                console.log("✅ Todo Saved:", savedTodo)
                 navigate('/todo')
                 showSuccessMsg(`Todo Saved (id: ${savedTodo._id})`)
             })
@@ -53,6 +68,7 @@ export function TodoEdit() {
                 console.log('err:', err)
             })
     }
+    if (!todoToEdit) return <div>Loading...</div>
 
     const { txt, importance, isDone } = todoToEdit
 

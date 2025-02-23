@@ -1,17 +1,21 @@
 const { useState } = React
 const { Link, NavLink } = ReactRouterDOM
 const { useNavigate } = ReactRouter
-const { useSelector } = ReactRedux
+const {useSelector,useDispatch} = ReactRedux
 
 import { userService } from '../services/user.service.js'
 import { UserMsg } from "./UserMsg.jsx"
 import { LoginSignup } from './LoginSignup.jsx'
 import { showErrorMsg } from '../services/event-bus.service.js'
+import {logout} from '../store/actions/user.actions.js'
+import { SET_USER } from '../store/reducers/userReducer.js'
 
 
 export function AppHeader() {
     const navigate = useNavigate()
-    const [user, setUser] = useState(userService.getLoggedinUser())
+    const dispatch = useDispatch()
+    // const [user, setUser] = useState(userService.getLoggedinUser())
+    const user = useSelector(storeState => storeState.userModule.loggedInUser)
 
     const todos = useSelector(state => state.toDoModule.todos)
     const completedTodos = todos.filter(todo => todo.isDone).length
@@ -19,17 +23,14 @@ export function AppHeader() {
     const precentageTodos = totalTodos ? Math.round((completedTodos/totalTodos)*100) : 0
     
     function onLogout() {
-        userService.logout()
-            .then(() => {
-                onSetUser(null)
-            })
-            .catch((err) => {
-                showErrorMsg('OOPs try again')
-            })
+        logout()
+            .then(() => {showSuccessMsg('Logout successfully')})
+            .catch(() => {showErrorMsg('OOPs try again')})
     }
 
     function onSetUser(user) {
-        setUser(user)
+        // setUser(user)
+        dispatch({type: SET_USER , user})
         navigate('/')
     }
     return (
@@ -39,7 +40,7 @@ export function AppHeader() {
                 {user ? (
                     < section >
 
-                        <Link to={`/user/${user._id}`}>Hello {user.fullname}</Link>
+                        <Link to={`/user/${user._id}`}>Hello {user.fullname} - Balance {user.balance}</Link>
                         <button onClick={onLogout}>Logout</button>
                     </ section >
                 ) : (

@@ -1,5 +1,7 @@
 import { todoService } from "../../services/todo.service.js";
+import { userService } from "../../services/user.service.js";
 import { SET_TODOS,REMOVE_TODO,ADD_TODO,UPDATE_TODO,SET_FILTER_BY,SET_IS_LOADING } from "../reducers/todo.reducer.js";
+import { SET_USER } from "../reducers/userReducer.js";
 import { store } from "../store.js";
 
 export function removeTodo(todoId){
@@ -17,7 +19,18 @@ export function saveTodo(todo){
     const type = todo._id ? UPDATE_TODO :ADD_TODO
     return todoService.save(todo)
         .then((savedTodo) => {
-            store.dispatch({type:type,todo:savedTodo})
+            store.dispatch({type:type, todo:savedTodo})
+            if(savedTodo.isDone){
+                console.log("yes in if")
+                increaseUserBalance(10)
+            }
+            // console.log(savedTodo.isDone)
+            const user = store.getState().userModule.loggedInUser
+            if (user) {
+                sessionStorage.setItem(STORAGE_KEY_LOGGEDIN, JSON.stringify(user))
+                store.dispatch({ type: SET_USER, user })
+                console.log("✅ User session preserved:", sessionStorage.getItem(STORAGE_KEY_LOGGEDIN));
+            }
             return savedTodo
         })
         .catch(err => {
@@ -25,6 +38,18 @@ export function saveTodo(todo){
             throw err
         })
 } 
+
+function increaseUserBalance(amount){
+    const user = store.getState().userModule.loggedInUser
+    if(!user) return
+
+    const updatedUser = {...user , balance : user.balance+amount}
+    console.log(updatedUser)
+    store.dispatch({type:SET_USER , updatedUser})
+    userService.updateUser(updatedUser)
+    .then(() => console.log("✅ User balance updated:", updatedUser.balance))
+    .catch(err => console.error("🚨 Error updating user balance:", err));
+}
 
 
 
