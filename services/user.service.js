@@ -11,7 +11,7 @@ export const userService = {
     getEmptyCredentials,
     updateUser
 }
-const STORAGE_KEY_LOGGEDIN = 'user'
+export const STORAGE_KEY_LOGGEDIN = 'user'
 const STORAGE_KEY = 'userDB'
 
 function query() {

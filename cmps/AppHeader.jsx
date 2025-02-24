@@ -1,4 +1,4 @@
-const { useState } = React
+const { useState ,useEffect} = React
 const { Link, NavLink } = ReactRouterDOM
 const { useNavigate } = ReactRouter
 const {useSelector,useDispatch} = ReactRedux
@@ -11,16 +11,24 @@ import {logout} from '../store/actions/user.actions.js'
 import { SET_USER } from '../store/reducers/userReducer.js'
 
 
+
 export function AppHeader() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    // const [user, setUser] = useState(userService.getLoggedinUser())
+    
     const user = useSelector(storeState => storeState.userModule.loggedInUser)
 
     const todos = useSelector(state => state.toDoModule.todos)
     const completedTodos = todos.filter(todo => todo.isDone).length
     const totalTodos = todos.length
     const precentageTodos = totalTodos ? Math.round((completedTodos/totalTodos)*100) : 0
+
+    useEffect(() =>{
+        const storedUser = userService.getLoggedinUser()
+        if(storedUser && (!user || storedUser.balance!==user.balance)){
+            dispatch({type : SET_USER, user:storedUser})
+        }
+    },[user,dispatch])
     
     function onLogout() {
         logout()

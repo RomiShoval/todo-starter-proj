@@ -3,6 +3,7 @@ import { userService } from "../../services/user.service.js";
 import { SET_TODOS,REMOVE_TODO,ADD_TODO,UPDATE_TODO,SET_FILTER_BY,SET_IS_LOADING } from "../reducers/todo.reducer.js";
 import { SET_USER } from "../reducers/userReducer.js";
 import { store } from "../store.js";
+import { STORAGE_KEY_LOGGEDIN } from "../../services/user.service.js";
 
 export function removeTodo(todoId){
     return todoService.remove(todoId)
@@ -44,6 +45,7 @@ function increaseUserBalance(amount){
     if(!user) return
 
     const updatedUser = {...user , balance : user.balance+amount}
+    sessionStorage.setItem(STORAGE_KEY_LOGGEDIN, JSON.stringify(updatedUser))
     console.log(updatedUser)
     store.dispatch({type:SET_USER , updatedUser})
     userService.updateUser(updatedUser)
