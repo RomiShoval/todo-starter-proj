@@ -1,12 +1,15 @@
 import { TodoPreview } from "./TodoPreview.jsx"
 const { Link } = ReactRouterDOM
 
-export function TodoList({ todos, onRemoveTodo, onToggleTodo }) {
+export function TodoList({ todos, onRemoveTodo, onToggleTodo ,isLoading }) {
     function getTodoClass(importance) {
         if (importance >= 8) return "high"
         if (importance >= 5) return "medium"
         return "low"
     }
+
+    if (isLoading) return <p>Loading Todos...</p>
+    if (!todos.length) return <p>No todos to show...</p>
 
     return (
         <ul className="todo-list">

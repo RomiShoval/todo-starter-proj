@@ -32,13 +32,21 @@ function login({ username, password }) {
 }
 
 function signup({ username, password, fullname }) {
-    const user = { username, password, fullname }
-    user.createdAt = user.updatedAt = Date.now()
-    user.balance = 10000
-    user.activities = {
-        txt : 'Added a Todo',
-        at : 1523873242735
+    const user ={
+        username,
+        password,
+        fullname,
+        createdAt : Date.now(),
+        updatedAt : Date.now(),
+        balance :10000,
+        activities : [],
+        pref : {color : 'black', bgColor : 'white'}
     }
+    // const user = { username, password, fullname }
+    // user.createdAt = user.updatedAt = Date.now()
+    // user.balance = 10000
+    // user.activities = []
+    // user.pref = {color: 'black', bgColor: 'white'}
     
     return storageService.post(STORAGE_KEY, user)
         .then(_setLoggedinUser)
@@ -51,18 +59,25 @@ function logout() {
 
 function getLoggedinUser() {
     const user = sessionStorage.getItem(STORAGE_KEY_LOGGEDIN);
-    if (!user) return null; // ✅ Return `null` instead of crashing
+    if (!user) return null; 
 
     try {
-        return JSON.parse(user); // ✅ Safe parsing
+        return JSON.parse(user); 
     } catch (err) {
-        console.error("❌ Error parsing user from sessionStorage:", err);
+        console.error("Error parsing user from sessionStorage:", err);
         return null;
     }
 }
 
 function _setLoggedinUser(user) {
-    const userToSave = { _id: user._id, fullname: user.fullname , balance :10000,activities:{txt: 'Added a Todo', at: 1523873242735} }
+    const userToSave = { 
+        _id: user._id, 
+        fullname: user.fullname , 
+        balance :user.balance || 10000,
+        activities: user.activities || [],
+        pref : user.pref || {color : 'black', bgColor : '#ffffff'}
+
+     }
     sessionStorage.setItem(STORAGE_KEY_LOGGEDIN, JSON.stringify(userToSave))
     return userToSave
 }
@@ -70,7 +85,7 @@ function _setLoggedinUser(user) {
 function updateUser(updatedUser){
     return storageService.put(STORAGE_KEY,updatedUser).then(() =>{
         sessionStorage.setItem(STORAGE_KEY_LOGGEDIN,JSON.stringify(updatedUser))
-        return updateUder
+        return updatedUser
     })
 }
 

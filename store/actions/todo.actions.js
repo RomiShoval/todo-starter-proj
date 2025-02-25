@@ -6,14 +6,35 @@ import { store } from "../store.js";
 import { STORAGE_KEY_LOGGEDIN } from "../../services/user.service.js";
 
 export function removeTodo(todoId){
-    return todoService.remove(todoId)
-        .then(() => {
-            store.dispatch({type:REMOVE_TODO,todoId})
-        })
-        .catch(err => {
-            console.log('err:', err)
-            throw err
-        })
+    return todoService.get(todoId)
+    .then(todo => {
+        return todoService.remove(todoId)
+            .then(() => {
+                store.dispatch({ type: REMOVE_TODO, todoId })
+
+                const user = store.getState().userModule.loggedInUser;
+                if (user) {
+                    const updatedUser = {
+                        ...user,
+                        activities: [...user.activities, { txt: `Removed Todo: '${todo.txt}'`, at: Date.now() }]
+                    };
+                    store.dispatch({ type: SET_USER, user: updatedUser })
+                    userService.updateUser(updatedUser)
+                }
+            });
+    })
+    .catch(err => {
+        console.error('Error removing todo:', err)
+        throw err
+    });
+    // return todoService.remove(todoId)
+    //     .then(() => {
+    //         store.dispatch({type:REMOVE_TODO,todoId})
+    //     })
+    //     .catch(err => {
+    //         console.log('err:', err)
+    //         throw err
+    //     })
 } 
 
 export function saveTodo(todo){
@@ -22,15 +43,19 @@ export function saveTodo(todo){
         .then((savedTodo) => {
             store.dispatch({type:type, todo:savedTodo})
             if(savedTodo.isDone){
-                console.log("yes in if")
-                increaseUserBalance(10)
+                // console.log("yes in if")
+                increaseUserBalance(10,savedTodo.txt)
             }
-            // console.log(savedTodo.isDone)
             const user = store.getState().userModule.loggedInUser
             if (user) {
-                sessionStorage.setItem(STORAGE_KEY_LOGGEDIN, JSON.stringify(user))
-                store.dispatch({ type: SET_USER, user })
-                console.log("✅ User session preserved:", sessionStorage.getItem(STORAGE_KEY_LOGGEDIN));
+                const updatedUser = {
+                    ...user,
+                    activities: [...user.activities, { txt: `Added Todo: '${savedTodo.txt}'`, at: Date.now() }]
+                }
+                sessionStorage.setItem(STORAGE_KEY_LOGGEDIN, JSON.stringify(updatedUser))
+                store.dispatch({ type: SET_USER, updatedUser })
+                userService.updateUser(updatedUser)
+                console.log("User session preserved:", sessionStorage.getItem(STORAGE_KEY_LOGGEDIN));
             }
             return savedTodo
         })
@@ -40,11 +65,20 @@ export function saveTodo(todo){
         })
 } 
 
-function increaseUserBalance(amount){
+function increaseUserBalance(amount,todotxt){
     const user = store.getState().userModule.loggedInUser
     if(!user) return
 
-    const updatedUser = {...user , balance : user.balance+amount}
+
+    const newActivity = {
+        txt :`Completed todo : ${todotxt}`,
+        at : Date.now()
+    }
+    const updatedUser = {
+        ...user , 
+        balance : user.balance+amount,
+        activities : [...user.activities,newActivity]
+    }
     sessionStorage.setItem(STORAGE_KEY_LOGGEDIN, JSON.stringify(updatedUser))
     console.log(updatedUser)
     store.dispatch({type:SET_USER , updatedUser})

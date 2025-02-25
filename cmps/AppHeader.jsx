@@ -12,6 +12,7 @@ import { SET_USER } from '../store/reducers/userReducer.js'
 
 
 
+
 export function AppHeader() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
@@ -32,7 +33,13 @@ export function AppHeader() {
     
     function onLogout() {
         logout()
-            .then(() => {showSuccessMsg('Logout successfully')})
+            .then(() => {
+                showSuccessMsg('Logout successfully')
+                sessionStorage.removeItem(STORAGE_KEY_LOGGEDIN)
+                document.body.style.color = "black"
+                document.body.style.backgroundColor = "white"
+                navigate('/')
+            })
             .catch(() => {showErrorMsg('OOPs try again')})
     }
 
@@ -47,7 +54,6 @@ export function AppHeader() {
                 <h1>React Todo App</h1>
                 {user ? (
                     < section >
-
                         <Link to={`/user/${user._id}`}>Hello {user.fullname} - Balance {user.balance}</Link>
                         <button onClick={onLogout}>Logout</button>
                     </ section >

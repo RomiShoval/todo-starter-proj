@@ -71,7 +71,8 @@ export function TodoIndex() {
                 <TodoList 
                     todos={todos} 
                     onRemoveTodo={onRemoveTodo} 
-                    onToggleTodo={onToggleTodo} />
+                    onToggleTodo={onToggleTodo} 
+                    isLoading = {isLoading}/>
                 : <div>Loading..</div>
             }
 
