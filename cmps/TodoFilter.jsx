@@ -7,10 +7,11 @@ export function TodoFilter({ filterBy, onSetFilterBy }) {
         importance: filterBy.importance || "",
         isDone: filterBy.isDone || "All"})
 
-    useEffect(() => {
-        // Notify parent
+
+
+    function onSubmitFilter(){
         onSetFilterBy(filterByToEdit)
-    }, [filterByToEdit])
+    }
 
     function handleChange({ target }) {
         const field = target.name
@@ -22,7 +23,7 @@ export function TodoFilter({ filterBy, onSetFilterBy }) {
         }
 
         switch (target.type) {
-            case 'number':
+            // case 'number':
             case 'range':
                 value = +value || ''
                 break
@@ -37,11 +38,11 @@ export function TodoFilter({ filterBy, onSetFilterBy }) {
         setFilterByToEdit(prevFilter => ({ ...prevFilter, [field]: value }))
     }
 
-    // Optional support for LAZY Filtering with a button
-    function onSubmitFilter(ev) {
-        ev.preventDefault()
-        onSetFilterBy(filterByToEdit)
-    }
+    
+    // function onSubmitFilter(ev) {
+    //     ev.preventDefault()
+    //     onSetFilterBy(filterByToEdit)
+    // }
 
     const { txt, importance } = filterByToEdit
     return (
@@ -75,7 +76,7 @@ export function TodoFilter({ filterBy, onSetFilterBy }) {
                     <option value="Active">Active</option>
                     <option value="Done">Done</option>
                 </select>
-                <button hidden>Set Filter</button>
+                <button hidden onClick={onSubmitFilter} >Set Filter</button>
             </form>
         </section>
     )
